@@ -105,6 +105,7 @@ local function launch_slave(auth_handler)
 
 	skynet.dispatch("lua", function(_,_,...)
 		local ok, msg, len = pcall(auth_fd, ...)
+
 		if ok then
 			skynet.ret(msg,len)
 		else
@@ -185,8 +186,10 @@ end
 
 local function login(conf)
 	local name = "." .. (conf.name or "login")
+
 	skynet.start(function()
 		local loginmaster = skynet.localname(name)
+		skynet.error(string.format("loginserver login:%s", loginmaster))
 		if loginmaster then
 			local auth_handler = assert(conf.auth_handler)
 			launch_master = nil

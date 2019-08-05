@@ -32,13 +32,11 @@ local function handle_socket(id)
             ws:start()
         end
     end
-
-
 end
 
 skynet.start(function()
     local address = "0.0.0.0:8008"
-    skynet.error("Listening "..address)
+    skynet.error("websocket listening on"..address)
     local id = assert(socket.listen(address))
     socket.start(id , function(id, addr)
        socket.start(id)
