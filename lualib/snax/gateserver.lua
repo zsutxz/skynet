@@ -1,6 +1,6 @@
 local skynet = require "skynet"
-local netpack = require "netpack"
-local socketdriver = require "socketdriver"
+local netpack = require "skynet.netpack"
+local socketdriver = require "skynet.socketdriver"
 
 local gateserver = {}
 
@@ -37,7 +37,7 @@ function gateserver.start(handler)
 		local port = assert(conf.port)
 		maxclient = conf.maxclient or 1024
 		nodelay = conf.nodelay
-		skynet.error(string.format("gateserver listen on %s:%d", address, port))
+		skynet.error(string.format("Listen on %s:%d", address, port))
 		socket = socketdriver.listen(address, port)
 		socketdriver.start(socket)
 		if handler.open then
@@ -113,7 +113,7 @@ function gateserver.start(handler)
 	function MSG.error(fd, msg)
 		if fd == socket then
 			socketdriver.close(fd)
-			skynet.error(msg)
+			skynet.error("gateserver close listen socket, accpet error:",msg)
 		else
 			if handler.error then
 				handler.error(fd, msg)

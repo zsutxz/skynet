@@ -1,3 +1,5 @@
+#define LUA_LIB
+
 #include <lua.h>
 #include <lauxlib.h>
 
@@ -5,6 +7,7 @@
 #include <stdint.h>
 #include <string.h>
 #include <stdlib.h>
+#include <unistd.h>
 
 #define SMALL_CHUNK 256
 
@@ -494,7 +497,7 @@ static int
 lfromhex(lua_State *L) {
 	size_t sz = 0;
 	const char * text = luaL_checklstring(L, 1, &sz);
-	if (sz & 2) {
+	if (sz & 1) {
 		return luaL_error(L, "Invalid hex text size %d", (int)sz);
 	}
 	char tmp[SMALL_CHUNK];
@@ -951,14 +954,14 @@ lxor_str(lua_State *L) {
 int lsha1(lua_State *L);
 int lhmac_sha1(lua_State *L);
 
-int
-luaopen_crypt(lua_State *L) {
+LUAMOD_API int
+luaopen_skynet_crypt(lua_State *L) {
 	luaL_checkversion(L);
 	static int init = 0;
 	if (!init) {
 		// Don't need call srandom more than once.
 		init = 1 ;
-		srandom(time(NULL));
+		srandom((random() << 8) ^ (time(NULL) << 16) ^ getpid());
 	}
 	luaL_Reg l[] = {
 		{ "hashkey", lhashkey },
@@ -981,4 +984,9 @@ luaopen_crypt(lua_State *L) {
 	};
 	luaL_newlib(L,l);
 	return 1;
+}
+
+LUAMOD_API int
+luaopen_client_crypt(lua_State *L) {
+	return luaopen_skynet_crypt(L);
 }

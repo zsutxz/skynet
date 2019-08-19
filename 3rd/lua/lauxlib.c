@@ -1,5 +1,5 @@
 /*
-** $Id: lauxlib.c,v 1.286 2016/01/08 15:33:09 roberto Exp $
+** $Id: lauxlib.c,v 1.289.1.1 2017/04/19 17:20:42 roberto Exp $
 ** Auxiliary functions for building Lua libraries
 ** See Copyright Notice in lua.h
 */
@@ -69,12 +69,11 @@ static int findfield (lua_State *L, int objidx, int level) {
 
 /*
 ** Search for a name for a function in all loaded modules
-** (registry._LOADED).
 */
 static int pushglobalfuncname (lua_State *L, lua_Debug *ar) {
   int top = lua_gettop(L);
   lua_getinfo(L, "f", ar);  /* push function */
-  lua_getfield(L, LUA_REGISTRYINDEX, "_LOADED");
+  lua_getfield(L, LUA_REGISTRYINDEX, LUA_LOADED_TABLE);
   if (findfield(L, top + 1, 2)) {
     const char *name = lua_tostring(L, -1);
     if (strncmp(name, "_G.", 3) == 0) {  /* name start with '_G.'? */
@@ -700,8 +699,7 @@ static int skipcomment (LoadF *lf, int *cp) {
   else return 0;  /* no comment */
 }
 
-
-static int luaL_loadfilex_ (lua_State *L, const char *filename,
+LUALIB_API int luaL_loadfilex_ (lua_State *L, const char *filename,
                                              const char *mode) {
   LoadF lf;
   int status, readstatus;
@@ -809,13 +807,17 @@ LUALIB_API lua_Integer luaL_len (lua_State *L, int idx) {
 
 
 LUALIB_API const char *luaL_tolstring (lua_State *L, int idx, size_t *len) {
-  if (!luaL_callmeta(L, idx, "__tostring")) {  /* no metafield? */
+  if (luaL_callmeta(L, idx, "__tostring")) {  /* metafield? */
+    if (!lua_isstring(L, -1))
+      luaL_error(L, "'__tostring' must return a string");
+  }
+  else {
     switch (lua_type(L, idx)) {
       case LUA_TNUMBER: {
         if (lua_isinteger(L, idx))
-          lua_pushfstring(L, "%I", lua_tointeger(L, idx));
+          lua_pushfstring(L, "%I", (LUAI_UACINT)lua_tointeger(L, idx));
         else
-          lua_pushfstring(L, "%f", lua_tonumber(L, idx));
+          lua_pushfstring(L, "%f", (LUAI_UACNUMBER)lua_tonumber(L, idx));
         break;
       }
       case LUA_TSTRING:
@@ -827,10 +829,15 @@ LUALIB_API const char *luaL_tolstring (lua_State *L, int idx, size_t *len) {
       case LUA_TNIL:
         lua_pushliteral(L, "nil");
         break;
-      default:
-        lua_pushfstring(L, "%s: %p", luaL_typename(L, idx),
-                                            lua_topointer(L, idx));
+      default: {
+        int tt = luaL_getmetafield(L, idx, "__name");  /* try name */
+        const char *kind = (tt == LUA_TSTRING) ? lua_tostring(L, -1) :
+                                                 luaL_typename(L, idx);
+        lua_pushfstring(L, "%s: %p", kind, lua_topointer(L, idx));
+        if (tt != LUA_TNIL)
+          lua_remove(L, -2);  /* remove '__name' */
         break;
+      }
     }
   }
   return lua_tolstring(L, -1, len);
@@ -882,23 +889,23 @@ static int libsize (const luaL_Reg *l) {
 
 /*
 ** Find or create a module table with a given name. The function
-** first looks at the _LOADED table and, if that fails, try a
+** first looks at the LOADED table and, if that fails, try a
 ** global variable with that name. In any case, leaves on the stack
 ** the module table.
 */
 LUALIB_API void luaL_pushmodule (lua_State *L, const char *modname,
                                  int sizehint) {
-  luaL_findtable(L, LUA_REGISTRYINDEX, "_LOADED", 1);  /* get _LOADED table */
-  if (lua_getfield(L, -1, modname) != LUA_TTABLE) {  /* no _LOADED[modname]? */
+  luaL_findtable(L, LUA_REGISTRYINDEX, LUA_LOADED_TABLE, 1);
+  if (lua_getfield(L, -1, modname) != LUA_TTABLE) {  /* no LOADED[modname]? */
     lua_pop(L, 1);  /* remove previous result */
     /* try global variable (and create one if it does not exist) */
     lua_pushglobaltable(L);
     if (luaL_findtable(L, 0, modname, sizehint) != NULL)
       luaL_error(L, "name conflict for module '%s'", modname);
     lua_pushvalue(L, -1);
-    lua_setfield(L, -3, modname);  /* _LOADED[modname] = new table */
+    lua_setfield(L, -3, modname);  /* LOADED[modname] = new table */
   }
-  lua_remove(L, -2);  /* remove _LOADED table */
+  lua_remove(L, -2);  /* remove LOADED table */
 }
 
 
@@ -962,17 +969,17 @@ LUALIB_API int luaL_getsubtable (lua_State *L, int idx, const char *fname) {
 */
 LUALIB_API void luaL_requiref (lua_State *L, const char *modname,
                                lua_CFunction openf, int glb) {
-  luaL_getsubtable(L, LUA_REGISTRYINDEX, "_LOADED");
-  lua_getfield(L, -1, modname);  /* _LOADED[modname] */
+  luaL_getsubtable(L, LUA_REGISTRYINDEX, LUA_LOADED_TABLE);
+  lua_getfield(L, -1, modname);  /* LOADED[modname] */
   if (!lua_toboolean(L, -1)) {  /* package not already loaded? */
     lua_pop(L, 1);  /* remove field */
     lua_pushcfunction(L, openf);
     lua_pushstring(L, modname);  /* argument to open function */
     lua_call(L, 1, 1);  /* call 'openf' to open module */
     lua_pushvalue(L, -1);  /* make copy of module (call result) */
-    lua_setfield(L, -3, modname);  /* _LOADED[modname] = module */
+    lua_setfield(L, -3, modname);  /* LOADED[modname] = module */
   }
-  lua_remove(L, -2);  /* remove _LOADED table */
+  lua_remove(L, -2);  /* remove LOADED table */
   if (glb) {
     lua_pushvalue(L, -1);  /* copy of module */
     lua_setglobal(L, modname);  /* _G[modname] = module */
@@ -1030,7 +1037,7 @@ LUALIB_API void luaL_checkversion_ (lua_State *L, lua_Number ver, size_t sz) {
     luaL_error(L, "multiple Lua VMs detected");
   else if (*v != ver)
     luaL_error(L, "version mismatch: app. needs %f, Lua core provides %f",
-                  ver, *v);
+                  (LUAI_UACNUMBER)ver, (LUAI_UACNUMBER)*v);
 }
 
 // use clonefunction
@@ -1056,8 +1063,12 @@ clearcache() {
 
 static void
 init() {
-	SPIN_INIT(&CC);
 	CC.L = luaL_newstate();
+}
+
+LUALIB_API void
+luaL_initcodecache(void) {
+	SPIN_INIT(&CC);
 }
 
 static const void *
@@ -1083,21 +1094,20 @@ save(const char *key, const void * proto) {
   SPIN_LOCK(&CC)
     if (CC.L == NULL) {
       init();
-      L = CC.L;
-    } else {
-      L = CC.L;
-      lua_pushstring(L, key);
-      lua_pushvalue(L, -1);
-      lua_rawget(L, LUA_REGISTRYINDEX);
-      result = lua_touserdata(L, -1); /* stack: key oldvalue */
-      if (result == NULL) {
-        lua_pop(L,1);
-        lua_pushlightuserdata(L, (void *)proto);
-        lua_rawset(L, LUA_REGISTRYINDEX);
-      } else {
-        lua_pop(L,2);
-      }
     }
+    L = CC.L;
+    lua_pushstring(L, key);
+    lua_pushvalue(L, -1);
+    lua_rawget(L, LUA_REGISTRYINDEX);
+    result = lua_touserdata(L, -1); /* stack: key oldvalue */
+    if (result == NULL) {
+      lua_pop(L,1);
+      lua_pushlightuserdata(L, (void *)proto);
+      lua_rawset(L, LUA_REGISTRYINDEX);
+    } else {
+      lua_pop(L,2);
+    }
+
   SPIN_UNLOCK(&CC)
   return result;
 }
@@ -1171,6 +1181,7 @@ LUALIB_API int luaL_loadfilex (lua_State *L, const char *filename,
     lua_close(eL);
     return err;
   }
+  lua_sharefunction(eL, -1);
   proto = lua_topointer(eL, -1);
   const void * oldv = save(filename, proto);
   if (oldv) {

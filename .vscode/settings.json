@@ -41,6 +41,7 @@
         "c++config.h": "c",
         "stl_iterator.h": "c",
         "string.h": "c",
-        "system_error": "c"
+        "system_error": "c",
+        "skynet_imp.h": "c"
     }
 }
