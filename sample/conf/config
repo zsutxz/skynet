@@ -8,11 +8,11 @@ loglevel = "debug"
 
 harbor = 0
 start = "main"	-- main script
-lualoader = root .. "skynet/lualib/loader.lua"
-luaservice = root .."skynet/service/?.lua;" .. "utils/?.lua;".."common/?.lua;".."common/dbcache/?.lua;".."common/persistent/cachedb/?.lua;".."common/persistent/log/?.lua;".."service/iot/?.lua;".."service/httpserver/?.lua;".."service/wechat/?.lua;".."service/room/?.lua;".."service/?.lua;".."example/?.lua"
-cpath = root .. "/skynet/cservice/?.so;"
-lua_path = root .. "skynet/lualib/?.lua;" .. root .. "skynet/lualib/?/init.lua;".."lualib/?.lua;".."utils/?.lua;".."common/?.lua;".."common/shared_modules/?.lua;".."common/dbcache/?.lua;".."common/persistent/cachedb/?.lua;".."common/persistent/log/?.lua;".."utils/?.lua;".."service/db/?.lua;".."service/iot/?.lua;".."service/httpserver/?.lua;".."service/wechat/?.lua;".."service/room/?.lua;"
-lua_cpath = root .. "skynet/luaclib/?.so;".."luaclib/?.so"
+lualoader = root .. "lualib/loader.lua"
+luaservice = root .."service/?.lua;" .. "utils/?.lua;".."common/?.lua;".."common/dbcache/?.lua;".."common/persistent/cachedb/?.lua;".."common/persistent/log/?.lua;".."service/iot/?.lua;".."service/httpserver/?.lua;".."service/wechat/?.lua;".."service/room/?.lua;".."service/?.lua;".."example/?.lua"
+cpath = root .. "/cservice/?.so;"
+lua_path = root .. "lualib/?.lua;" .. root .. "lualib/?/init.lua;".. root.."lualib/compat10/?.lua;".."lualib/?.lua;".."utils/?.lua;".."common/?.lua;".."common/shared_modules/?.lua;".."common/dbcache/?.lua;".."common/persistent/cachedb/?.lua;".."common/persistent/log/?.lua;".."utils/?.lua;".."service/db/?.lua;".."service/iot/?.lua;".."service/httpserver/?.lua;".."service/wechat/?.lua;".."service/room/?.lua;"
+lua_cpath = root .. "/cservice/?.so;"..root .. "luaclib/?.so;".."luaclib/?.so"
 
 if $DAEMON then
 	logger = root .. "run/skynet.log"

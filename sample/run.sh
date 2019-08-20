@@ -16,5 +16,5 @@ do
 	esac
 done
 
-../skynet/skynet $ROOT/conf/config
+../skynet $ROOT/conf/config
 
