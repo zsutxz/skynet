@@ -1,0 +1,31 @@
+[:00000013][2019-05-14 10:20:19  info] connect to mysql db
+[:00000013][2019-05-14 10:20:19  info] wx_db,select_max_machid,select max(mach_id) as max_id from wx_db.tb_machine;
+[:00000008][2019-08-19 13:41:52   err] listen_error:port=8000,name=debugport
+[:0000000c][2019-08-19 13:42:14  info] managePort = nil
+[:0000000c][2019-08-19 13:42:14  info] manage_console started
+[:0000000e][2019-08-19 13:42:14  info] const loaded
+[:00000010][2019-08-19 13:42:14  info] no conf found: ../../conf/anti_fastmsg_dev.conf
+[:00000010][2019-08-19 13:42:14  info] globalconf = {enable_win_ctrl = 0, android_redirect_vip = "", res_pack_cdn = "http://192.168.0.119:8080/html/client_files/test", anti_fastmsg_conf = {}, version_too_old_notice = "您当前的版本号过低，需要升级到最新版本。", cmdstat_service_output_enable = 1, ios_redirect_vip = "192.168.0.119", ios_res_pack_cdn = "", excharge_ali_test = 1, mysql_auto_test_conn_time = 10, excharge_wc_test = 1, anti_fastmsg_sampling_interval = 60, zego_appid = "1234", gmlist = {}, android_redirect_port = 0, ios_full_pack_cdn = "", full_pack_cdn = "http://192.168.0.119:8080/html/client_files/test", mysql_queue_enable = 1, zego_appkey = "1234", excharge_wc_enable = 1, ios_review = 0, tlog_is_log_local = 1, player_non_core_bgsave_interval = 180, load_stat_enable = 0, whitelist_file = "whitelist.txt", gm_enable = 2, ios_redirect_port = 10888, max_online_user = 3900, sms_secret = "b5959151d3d595a306007f56fc1e5b3e", sms_method = "alibaba.aliqin.fc.sms.num.send", max_inactive_time = 1800, load_stat_interval = 30, sms_sign_name = "力港游戏", profile_mem_sampling_interval = 60, excharge_apple_verify_test = 1, anti_fastmsg_enable = 1, player_core_bgsave_interval = 120, excharge_ali_enable = 1, whitelist_enable = 0, max_login_per_sec = 30, max_conn_per_sec = 100, tlog_file_size_lmt = 500, kefu_enabled = 1, voice_enabled = 1, cmdstat_service_output_interval = 600, recharge_enable = 1, whitelist_special_print_openinfo = 0, encrypt = 0, max_register_count = -1, redis_expire_time = 259200, cmdstat_agent_output_enable = 0, android_redirect_host = "", anti_fastmsg_conf_file = "anti_fastmsg_dev.conf", common_res_cdn = "http://192.168.0.119:8080/html/common_res", gmlist_file = "gmlist.txt", ios_redirect_host = "192.168.0.119", excharge_apple_enable = 1, package_update_info_file = "package_update_info_test.conf", client_err_rpt_enable = 1, sms_app_key = "23776554"}
+[:00000010][2019-08-19 13:42:14  info] globalconf inited
+[:00000011][2019-08-19 13:42:14  info] mysql_service makeConn success, database = wx_db
+[:00000011][2019-08-19 13:42:14  info] mysql_service register:.wx_db
+[:00000012][2019-08-19 13:42:14   err] redis_db err, redis query fail,err:../skynet/lualib/socketchannel.lua:371: NOAUTH Authentication required., cmd:script loadlocal fields = {}; local keys = redis.call('keys',KEYS[1]); for k,key in pairs(keys) do fields[#fields+1] = redis.call('hgetall',key) end; return fields;
+[:00000008][2019-08-19 13:42:14  warn] load redis script fail,key:hgetalls
+[:00000012][2019-08-19 13:42:14   err] redis_db err, redis query fail,err:../skynet/lualib/socketchannel.lua:371: NOAUTH Authentication required., cmd:script loadlocal fields = {}; local keys = redis.call('keys',KEYS[1]); for k,key in pairs(keys) do fields[#fields+1] = redis.call('EXPIRE',key, ARGV[1]) end; return 'OK';
+[:00000008][2019-08-19 13:42:14  warn] load redis script fail,key:expires
+[:00000012][2019-08-19 13:42:14   err] redis_db err, redis query fail,err:../skynet/lualib/socketchannel.lua:371: NOAUTH Authentication required., cmd:script loadlocal keys = redis.call('keys',KEYS[1]); for k,key in pairs(keys) do redis.call('del',key) end; return 'OK';
+[:00000008][2019-08-19 13:42:14  warn] load redis script fail,key:dels
+[:0000002d][2019-08-19 13:42:15  info] wx_db,select_last_room_id,select max(id) as last_id from wx_db.tb_room_info;
+[:0000000c][2019-08-19 13:42:15  info] manageconsole, register_reload_service: .constloader
+[:0000000c][2019-08-19 13:42:15  info] manageconsole, register_reload_service: .globalconfloader
+[:0000000c][2019-08-19 13:42:15  info] manageconsole, register_reload_service: .configsloader
+[:0000000c][2019-08-19 13:42:15  info] manageconsole, register_reload_service: .version_mgr
+[:0000000c][2019-08-19 13:42:15  info] manageconsole, register_reload_service: .whitelist_mgr
+[:0000000c][2019-08-19 13:42:15  info] manageconsole, register_reload_service: .cert_verify
+[:0000000c][2019-08-19 13:42:15  info] manageconsole, register_reload_service: .tlogc
+[:00000013][2019-08-19 14:12:15  info] connect to mysql db
+[:00000013][2019-08-19 14:12:15  info] wx_db,select_max_machid,select max(mach_id) as max_id from wx_db.tb_machine;
+[:00000013][2019-08-19 14:42:15  info] connect to mysql db
+[:00000013][2019-08-19 14:42:15  info] wx_db,select_max_machid,select max(mach_id) as max_id from wx_db.tb_machine;
+[:00000013][2019-08-19 15:12:15  info] connect to mysql db
+[:00000013][2019-08-19 15:12:15  info] wx_db,select_max_machid,select max(mach_id) as max_id from wx_db.tb_machine;

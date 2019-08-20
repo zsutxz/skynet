@@ -1,0 +1,38 @@
+root = "../"
+thread = 8
+logservice = "logger"
+logger =  nil --"./run/skynet.log"
+logpath = "./run"
+logfilename = "log"
+loglevel = "debug"
+
+harbor = 0
+start = "main"	-- main script
+lualoader = root .. "skynet/lualib/loader.lua"
+luaservice = root .."skynet/service/?.lua;" .. "utils/?.lua;".."common/?.lua;".."common/dbcache/?.lua;".."common/persistent/cachedb/?.lua;".."common/persistent/log/?.lua;".."service/iot/?.lua;".."service/httpserver/?.lua;".."service/wechat/?.lua;".."service/room/?.lua;".."service/?.lua;".."example/?.lua"
+cpath = root .. "/skynet/cservice/?.so;"
+lua_path = root .. "skynet/lualib/?.lua;" .. root .. "skynet/lualib/?/init.lua;".."lualib/?.lua;".."utils/?.lua;".."common/?.lua;".."common/shared_modules/?.lua;".."common/dbcache/?.lua;".."common/persistent/cachedb/?.lua;".."common/persistent/log/?.lua;".."utils/?.lua;".."service/db/?.lua;".."service/iot/?.lua;".."service/httpserver/?.lua;".."service/wechat/?.lua;".."service/room/?.lua;"
+lua_cpath = root .. "skynet/luaclib/?.so;".."luaclib/?.so"
+
+if $DAEMON then
+	logger = root .. "run/skynet.log"
+	daemon = root .. "run/skynet.pid"
+end
+
+--全局配置文件的名字
+global_conf_file = "global.conf"
+
+mysqldb = "wx_db;"
+
+--业务数据库配置
+wx_db_svr  = ".wx_db"		
+wx_db_host = "127.0.0.1"
+wx_db_port = 3306
+wx_db_user = "sealy"
+wx_db_pwd  = "1aly_DBL356"
+
+--redis
+redis_svr  = ".redisdb"
+redis_host = "127.0.0.1"
+redis_port = 6379
+redis_auth = "sealy123"
